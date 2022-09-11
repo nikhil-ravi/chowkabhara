@@ -104,7 +104,7 @@ class Board:
         )
         new_positions = [
             piece.position + move
-            for move in self.roll + [np.sum(self.roll)]
+            for move in self.roll
             if piece.position + move <= can_go_till
         ]
         for pos in new_positions:
