@@ -1,0 +1,75 @@
+@startuml ChowkaBhara
+
+'left to right direction
+' skinparam linetype ortho
+
+Class Main{
+    - screen: pygame.Surface
+    + main()
+}
+
+Class Const{
+    - WIDTH: int
+    - HEIGHT: int
+    - ROWS: int
+    - COLS: int
+    - SQSIZE: int
+    - LINE_WIDTH: int
+    - BG_COLOR: tuple
+    - LINE_COLOR: tuple
+}
+
+class Game{
+    - next_player: int
+    + show_bg()
+    + show_pieces()
+    + show_moves()
+    + next_turn()
+    + reset()
+}
+
+class Board{
+    - _create()
+    - _add_pieces()
+    + roll()
+    + move()
+    + valid_move()
+    + calc_moves()
+}
+
+class Square{
+    - row: int
+    - col: int
+    - safe_house: bool
+    - fruit: bool
+    + has_piece()
+    + has_team_piece()
+    + has_enemy_piece()
+    + is_empty()
+    + is_empty_or_enemy()
+}
+
+class Piece{
+    - color: str
+    - value: int
+    - level: int
+    - texture: str
+    - texture_rect: pygame.Rect
+    + add_move()
+    + set_texture()
+    + clear_moves()
+}
+
+Class Move{}
+
+Main --> "1" Game: +game
+Game -r-> "1" Board: +board
+Game --> "1" Square: +hovered_square
+Board --> "49" Square: +squares
+Square --> "*" Piece: +pieces
+Board --> "0..1" Move: +last_move
+Piece --> "*" Move: +moves
+Move --> "1" Square: +initial
+Move --> "1" Square: +final
+
+@enduml
