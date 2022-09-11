@@ -1,6 +1,7 @@
 from __future__ import annotations
 from enum import Enum
 import os
+from typing import List
 from constants import PLACES_TO_FRUIT, PLACES_BEFORE_INNER
 
 class Piece:
@@ -9,7 +10,6 @@ class Piece:
         self.color = color
         self.home_position = PieceColor[self.color].value * 100
         self.position = self.home_position * 1
-        self.can_go_inside = False
         self.final_outer_position = self.home_position + PLACES_BEFORE_INNER
         self.fruit_position = self.home_position + PLACES_TO_FRUIT
         self.moves = []
@@ -24,15 +24,6 @@ class Piece:
     
     def can_move(self, places):
         return (self.position + places) <= self.fruit_position
-    
-    def moves_left(self):
-        return self.fruit_position - self.position
-        
-    def is_home(self):
-        return self.position == self.color
-    
-    def is_out(self):
-        return self.position > 0 and not self.is_fruit()
     
     def is_fruit(self):
         return self.position == self.fruit_position
@@ -49,7 +40,22 @@ class Piece:
     
     def set_texture(self, size:int=80):
         self.texture = os.path.join(f"assets/images/imgs-{size}px/{self.color}.png")
+
+class TiedPiece(Piece):
+    def __init__(self, color: PieceColor, pieces: List[Piece]):
+        self.pieces = pieces
+        self.position = self.pieces[0].position
+        super().__init__(color)
     
+    def can_move(self, places):
+        return ((places % 2) == 0 and (self.position + places) <= self.fruit_position)
+    
+    def return_to_home(self):
+        if not self.is_fruit():
+            for piece in self.pieces:
+                piece.return_to_home()
+    
+ 
 class PieceColor(Enum):
     """A class of colors for the players."""
     Red = 0

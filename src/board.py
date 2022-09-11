@@ -1,4 +1,3 @@
-import random
 from constants import *
 from move import Move
 from square import Square
