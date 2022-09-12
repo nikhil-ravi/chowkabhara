@@ -106,12 +106,13 @@ class Board:
             col=home_square[1][0],
             pieces=[Piece(color) for _ in range(PIECES_PER_PLAYER)],
         )
-        if color == "Red":
-            self.squares[6][0] = Square(
-                row=6, col=0, pieces=[Piece(color) for _ in range(2)]
-            )  # //TODO
-            self.squares[6][0].pieces[0].position = 21
-            self.squares[6][0].pieces[1].position = 21
+        # Testing
+        # if color == "Red":
+        #     self.squares[6][0] = Square(
+        #         row=6, col=0, pieces=[Piece(color) for _ in range(2)]
+        #     )  # //TODO
+        #     self.squares[6][0].pieces[0].position = 21
+        #     self.squares[6][0].pieces[1].position = 21
 
     def set_capture_flag(self, player: PieceColor):
         self.player_captured_flags[player] = True
@@ -180,9 +181,9 @@ class Board:
                     if pos <= can_go_till:
                         final_row, final_col = self.get_alias_to_row_col(pos)
                         move_to_add = Move(
-                                Square(row=row, col=col),
-                                Square(row=final_row, col=final_col),
-                            )
+                            Square(row=row, col=col),
+                            Square(row=final_row, col=final_col),
+                        )
                         piece.add_move(move_to_add)
 
     def kawade(self, test: bool = True):
