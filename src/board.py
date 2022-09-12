@@ -10,7 +10,7 @@ class Board:
         self.squares = [[0] * ROWS for _ in range(COLS)]
         self.last_move = None
         self.players = players
-        self.player_captured_flags = {player: False for player in self.players}
+        self.player_captured_flags = {player: True for player in self.players}  # //TODO
         self.number_of_players = len(self.players)
         if self.number_of_players == 2:
             rotate_grid_by = 2
@@ -50,7 +50,10 @@ class Board:
             self.squares[initial.row][initial.col].remove_piece(piece)
             self.squares[final.row][final.col].add_piece(piece)
             piece.move(move_length)
-            self.roll.remove(move_length)
+            move_length_to_remove = (
+                2 * move_length if piece.name == "TiedPiece" else move_length
+            )
+            self.roll.remove(move_length_to_remove)
         else:
             # Find the other piece to tie with
             other_piece = self.squares[initial.row][
@@ -58,13 +61,12 @@ class Board:
             ].get_other_single_team_piece(piece)
             self.squares[initial.row][initial.col].remove_piece(piece)
             self.squares[initial.row][initial.col].remove_piece(other_piece)
-            self.squares[initial.row][initial.col].add_piece(
-                TiedPiece(
-                    piece.color,
-                    self.row_col_to_alias[piece.color][(final.row, final.col)],
-                    [piece, other_piece],
-                )
+            newTiedPiece = TiedPiece(
+                piece.color,
+                self.row_col_to_alias[piece.color][(final.row, final.col)],
+                [piece, other_piece],
             )
+            self.squares[final.row][final.col].add_piece(newTiedPiece)
             self.roll.remove(2)
         # Capture
         if not self.squares[final.row][final.col].is_safe_house():
@@ -72,9 +74,7 @@ class Board:
                 piece.color
             )
             for enemy_piece in enemy_pieces:
-                if not (
-                    enemy_piece.name == "TiedPiece" and piece.name == "Piece"
-                ):
+                if not (enemy_piece.name == "TiedPiece" and piece.name == "Piece"):
                     home_row, home_col = self.get_alias_to_row_col(
                         enemy_piece.home_position
                     )
@@ -106,6 +106,12 @@ class Board:
             col=home_square[1][0],
             pieces=[Piece(color) for _ in range(PIECES_PER_PLAYER)],
         )
+        if color == "Red":
+            self.squares[6][0] = Square(
+                row=6, col=0, pieces=[Piece(color) for _ in range(2)]
+            )  # //TODO
+            self.squares[6][0].pieces[0].position = 21
+            self.squares[6][0].pieces[1].position = 21
 
     def set_capture_flag(self, player: PieceColor):
         self.player_captured_flags[player] = True
@@ -139,7 +145,9 @@ class Board:
                         (pos % 100) <= PLACES_BEFORE_INNER  # if still in the outer loop
                         and (  # The final position
                             # Either needs be empty or contain an enemy piece
-                            self.squares[final_row][final_col].isempty_or_enemy(piece.color)
+                            self.squares[final_row][final_col].isempty_or_enemy(
+                                piece.color
+                            )
                             # Or should be a safe house
                             or self.squares[final_row][final_col].is_safe_house()
                         )
@@ -150,7 +158,11 @@ class Board:
                                 Square(row=final_row, col=final_col),
                             )
                         )
-                if places == 2 and can_tie and (pos % 100 > PLACES_BEFORE_INNER):
+                if (
+                    places == 2
+                    and can_tie
+                    and (piece.position % 100 > PLACES_BEFORE_INNER)
+                ):
                     final_row, final_col = self.get_alias_to_row_col(piece.position + 1)
                     piece.add_move(
                         Move(
@@ -160,18 +172,18 @@ class Board:
                         )
                     )
         if piece.name == "TiedPiece":
+            piece.clear_moves()
             can_go_till = piece.fruit_position
             for places in self.roll:
                 if places % 2 == 0:
                     pos = piece.position + places // 2
                     if pos <= can_go_till:
                         final_row, final_col = self.get_alias_to_row_col(pos)
-                        piece.add_move(
-                            Move(
+                        move_to_add = Move(
                                 Square(row=row, col=col),
                                 Square(row=final_row, col=final_col),
                             )
-                        )
+                        piece.add_move(move_to_add)
 
     def kawade(self, test: bool = True):
         if not test:
@@ -191,5 +203,4 @@ class Board:
                     )
                 )
         else:
-            input_string = input("Enter a list element separated by space ")
-            self.roll = [int(num) for num in input_string.split()]
+            self.roll = [4, 4, 2]

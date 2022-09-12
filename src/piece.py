@@ -55,6 +55,10 @@ class TiedPiece(Piece):
         self.position = position
         self.name = "TiedPiece"
     
+    def move(self, places):
+        # if self.can_move(places):
+        self.position += places
+    
     def can_move(self, places):
         return ((places % 2) == 0 and (self.position + places) <= self.fruit_position)
     
@@ -65,6 +69,9 @@ class TiedPiece(Piece):
     
     def set_texture(self, size:int=80):
         self.texture = os.path.join(f"assets/images/imgs-{size}px/Tied{self.color}.png")
+        
+    def __repr__(self) -> str:
+        return f"{self.color=}: {self.position=} with {self.pieces=}"
  
 class PieceColor(Enum):
     """A class of colors for the players."""

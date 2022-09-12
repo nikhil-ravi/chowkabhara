@@ -7,8 +7,8 @@ class Move:
         self.final = final
         self.tying_move = tying_move
 
-    def __str__(self):
-        return f"({self.initial.col}, {self.initial.row}) -> ({self.final.col}, {self.final.row})"
+    def __repr__(self):
+        return f"({self.initial.row}, {self.initial.col}) -> ({self.final.row}, {self.final.col})"
 
     def __eq__(self, other):
         return self.initial == other.initial and self.final == other.final
