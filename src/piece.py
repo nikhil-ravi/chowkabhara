@@ -7,6 +7,7 @@ from constants import PLACES_TO_FRUIT, PLACES_BEFORE_INNER
 class Piece:
     
     def __init__(self, color: PieceColor, texture= None, texture_rect =None):
+        self.name = "Piece"
         self.color = color
         self.home_position = PieceColor[self.color].value * 100
         self.position = self.home_position * 1
@@ -34,6 +35,12 @@ class Piece:
     def clear_moves(self):
         self.moves = []
     
+    def get_move_from_initial_final(self, initial, final):
+        for move in self.moves:
+            if move.initial == initial and move.final == final:
+                return move
+        return None
+    
     def return_to_home(self):
         if not self.is_fruit():
             self.position = self.home_position * 1
@@ -42,10 +49,11 @@ class Piece:
         self.texture = os.path.join(f"assets/images/imgs-{size}px/{self.color}.png")
 
 class TiedPiece(Piece):
-    def __init__(self, color: PieceColor, pieces: List[Piece]):
-        self.pieces = pieces
-        self.position = self.pieces[0].position
+    def __init__(self, color: PieceColor, position: int, pieces: List[Piece]):
         super().__init__(color)
+        self.pieces = pieces
+        self.position = position
+        self.name = "TiedPiece"
     
     def can_move(self, places):
         return ((places % 2) == 0 and (self.position + places) <= self.fruit_position)
@@ -55,6 +63,8 @@ class TiedPiece(Piece):
             for piece in self.pieces:
                 piece.return_to_home()
     
+    def set_texture(self, size:int=80):
+        self.texture = os.path.join(f"assets/images/imgs-{size}px/Tied{self.color}.png")
  
 class PieceColor(Enum):
     """A class of colors for the players."""

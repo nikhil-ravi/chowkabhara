@@ -23,11 +23,28 @@ class Square:
         return not self.has_pieces()
 
     def has_team_piece(self, color):
-        if self.has_pieces(color):
+        if self.has_pieces():
             for piece in self.pieces:
                 if piece.color == color:
                     return True
         return False
+
+    def has_single_team_piece(self, color):
+        if self.has_pieces():
+            for piece in self.pieces:
+                if piece.color == color and piece.name == "Piece":
+                    return True
+        return False
+
+    def get_other_single_team_piece(self, piece):
+        if self.has_pieces():
+            for other_piece in self.pieces:
+                if (
+                    other_piece.color == piece.color
+                    and other_piece.name == "Piece"
+                    and other_piece != piece
+                ):
+                    return other_piece
 
     def has_enemy_piece(self, color):
         if self.has_pieces():

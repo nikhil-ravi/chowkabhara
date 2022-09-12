@@ -84,6 +84,7 @@ class Main:
                         move = Move(initial=initial, final=final)
 
                         if board.valid_move(dragger.piece, move):
+                            move = dragger.piece.get_move_from_initial_final(move.initial, move.final)
                             if board.squares[released_row][
                                 released_col
                             ].has_enemy_piece(game.next_player) and (
