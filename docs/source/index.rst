@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to Chowka Bhara's documentation!
-=======================================
+========================================
 
 This is the documentation page for the Chowka Bhara game.
 

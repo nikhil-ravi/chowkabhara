@@ -33,32 +33,34 @@ class Board:
     def _generate_player_paths(self):
         """Generates a Player-keyed dictionary of a player's path. The value is a
         2d-array of size ROWS x COLS, where grid[row, col] indicates the alias of the
-        board square that it is on.
-        For example, Player 1's (RED) grid will look like this:
-        [
-            [15, 14, 13, 12, 11, 10, 9],
-            [16, 28, 29, 30, 31, 32, 8],
-            [17, 27, 42, 43, 44, 33, 7],
-            [18, 26, 41, 48, 45, 34, 6],
-            [19, 25, 40, 47, 46, 35, 5],
-            [20, 24, 39, 38, 37, 36, 4],
-            [21, 22, 23, 0, 1, 2, 3],
-        ]
+        board square that it is on.  
+        For example, Player 1's (RED) grid will look like this::
+            [
+                [15, 14, 13, 12, 11, 10, 9],  
+                [16, 28, 29, 30, 31, 32, 8],  
+                [17, 27, 42, 43, 44, 33, 7],  
+                [18, 26, 41, 48, 45, 34, 6],  
+                [19, 25, 40, 47, 46, 35, 5],  
+                [20, 24, 39, 38, 37, 36, 4],  
+                [21, 22, 23,  0,  1,  2, 3],
+            ]
+        
         where 0 is their starting position and the path follows the squares labeled
         1, 2, 3, and so on.
 
         Player 2's grid is rotated 180º (when there 2 players and 90º when there
         are more than two players). When there are only two players, it takes the
-        following form:
-        [
-            [103, 102, 101, 100, 123, 122, 121],
-            [104, 136, 137, 138, 139, 124, 120],
-            [105, 135, 146, 147, 140, 125, 119],
-            [106, 134, 145, 148, 141, 126, 118],
-            [107, 133, 144, 143, 142, 127, 117],
-            [108, 132, 131, 130, 129, 128, 116],
-            [109, 110, 111, 112, 113, 114, 115]
-        ]
+        following form::
+            [
+                [103, 102, 101, 100, 123, 122, 121],
+                [104, 136, 137, 138, 139, 124, 120],
+                [105, 135, 146, 147, 140, 125, 119],
+                [106, 134, 145, 148, 141, 126, 118],
+                [107, 133, 144, 143, 142, 127, 117],
+                [108, 132, 131, 130, 129, 128, 116],
+                [109, 110, 111, 112, 113, 114, 115]
+            ]
+        
         Here, player 2 starts at 100 and follows the squares labeled 101, 102, and
         so on.
         """
@@ -239,7 +241,7 @@ class Board:
             raise InvalidAliasException
         else:
             return self.alias_to_row_col[alias]
-
+    
     def calc_moves(self, piece: Piece, row: int, col: int):
         """Calculate which of moves from the roll the given Piece at row and col
         can undertake. It first clears the piece's moves vector and then populates
