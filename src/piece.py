@@ -6,7 +6,6 @@ from constants import PLACES_TO_FRUIT, PLACES_BEFORE_INNER, GRID_OFFSET
 import pygame
 
 from move import Move
-from square import Square
 
 class Piece:
     """The piece class represents the piece on the board.
@@ -70,25 +69,6 @@ class Piece:
     def clear_moves(self):
         """Clears the pieces moves list."""
         self.moves = []
-    
-    def get_move_from_initial_final(self, initial: Square, final: Square) -> Move | None:
-        """Given an initial square and a final square, check in the piece's moves list
-        for a move with the given initial and final squares and return it if present,
-        else return None.
-        
-        Args:
-            initial (Square): The initial square.
-            final (Square): The final square.
-        
-        Returns:
-            Move | None:
-             - Move: If a move with the initial and final squares is present, return it.
-             - None: Else, return None.
-        """
-        for move in self.moves:
-            if move.initial == initial and move.final == final:
-                return move
-        return None
     
     def return_to_home(self):
         """If the piece is not at the fruiting position, return it to its home

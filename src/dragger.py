@@ -2,7 +2,9 @@ from typing import Tuple
 import pygame
 
 from constants import SQSIZE
+from move import Move
 from piece import Piece
+from square import Square
 
 class Dragger:
     """The Dragger class to handle the dragging of pieces."""
@@ -67,3 +69,23 @@ class Dragger:
         """Resets the dragger."""
         self.piece = None
         self.dragging = False
+    
+    
+    def get_move_from_initial_final(self, initial: Square, final: Square) -> Move | None:
+        """Given an initial square and a final square, check in the piece's moves list
+        for a move with the given initial and final squares and return it if present,
+        else return None.
+        
+        Args:
+            initial (Square): The initial square.
+            final (Square): The final square.
+        
+        Returns:
+            Move | None:
+             - Move: If a move with the initial and final squares is present, return it.
+             - None: Else, return None.
+        """
+        for move in self.piece.moves:
+            if move.initial == initial and move.final == final:
+                return move
+        return None
