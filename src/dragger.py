@@ -1,8 +1,11 @@
+from typing import Tuple
 import pygame
 
-from constants import *
+from constants import SQSIZE
+from piece import Piece
 
 class Dragger:
+    """The Dragger class to handle the dragging of pieces."""
 
     def __init__(self):
         self.piece = None
@@ -14,7 +17,12 @@ class Dragger:
 
     # blit method
 
-    def update_blit(self, surface):
+    def update_blit(self, surface: pygame.Surface):
+        """Updates the surface to reflect the dragging of pieces.
+        
+        Args:
+            surface (pygame.Surface): The pygame surface to draw on.
+        """
         # texture
         self.piece.set_texture(size=128)
         texture = self.piece.texture
@@ -28,17 +36,34 @@ class Dragger:
 
     # other methods
 
-    def update_mouse(self, pos):
+    def update_mouse(self, pos: Tuple[int, int]):
+        """Update the mouse coordinates as the dragger moves.
+
+        Args:
+            pos (Tuple[int, int]): The row, col pair of the new mouse position.
+        """
         self.mouseX, self.mouseY = pos # (xcor, ycor)
 
-    def save_initial(self, pos):
+    def save_initial(self, pos: Tuple[int, int]):
+        """Save the initial piece position to bring it back in case it was dragged
+        to an invalid location.
+
+        Args:
+            pos (Tuple[int, int]): The row, col pair of the initial piece position.
+        """
         self.initial_row = pos[1] // SQSIZE
         self.initial_col = pos[0] // SQSIZE
 
-    def drag_piece(self, piece):
+    def drag_piece(self, piece: Piece):
+        """Sets the dragging piece.
+
+        Args:
+            piece (Piece): The piece to set the dragging piece to.
+        """
         self.piece = piece
         self.dragging = True
 
     def undrag_piece(self):
+        """Resets the dragger."""
         self.piece = None
         self.dragging = False

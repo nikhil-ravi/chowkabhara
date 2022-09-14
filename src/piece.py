@@ -1,51 +1,108 @@
 from __future__ import annotations
 from enum import Enum
 import os
-from typing import List
+from typing import List, Optional
 from constants import PLACES_TO_FRUIT, PLACES_BEFORE_INNER, GRID_OFFSET
+import pygame
+
+from move import Move
+from square import Square
 
 class Piece:
+    """The piece class represents the piece on the board.
     
-    def __init__(self, color: PieceColor, texture= None, texture_rect =None):
-        self.name = "Piece"
+    Args:
+        color (PieceColor): The color of the piece.
+        texture (str): The path to the texture for the piece.
+        texture_rect (pygame.Rect, optional): The rect of the texture for the piece.
+    """
+    def __init__(self, color: PieceColor, texture: Optional[str] = None, texture_rect: Optional[pygame.Rect] =None):
         self.color = color
+        self.texture = texture
+        self.texture_rect = texture_rect
+        
+        self.name = "Piece"
         self.home_position = PieceColor[self.color].value * GRID_OFFSET
         self.position = self.home_position * 1
         self.final_outer_position = self.home_position + PLACES_BEFORE_INNER
         self.fruit_position = self.home_position + PLACES_TO_FRUIT
         self.moves = []
-        self.texture = texture
-        self.texture_rect = texture_rect
         self.img_center = None
         self.set_texture()
     
-    def move(self, places):
+    def move(self, places: int):
+        """Update the piece's position by the given number of places.
+
+        Args:
+            places (int): The number of places by which to increase the piece's 
+            position by.
+        """
         if self.can_move(places):
             self.position += places
     
-    def can_move(self, places):
+    def can_move(self, places: int) -> bool:
+        """Check if the piece can be moved by the given number of places.
+
+        Args:
+            places (int): The number of places by which to increase the piece's position.
+
+        Returns:
+            bool: Whether the piece can be moved by the given number of places.
+        """
         return (self.position + places) <= self.fruit_position
     
-    def is_fruit(self):
+    def is_fruit(self) -> bool:
+        """Check whether the piece is already at the fruiting position.
+
+        Returns:
+            bool: Whether the piece is at the fruiting position.
+        """
         return self.position == self.fruit_position
     
-    def add_move(self, move):
+    def add_move(self, move: Move):
+        """Adds a move to the pieces moves list.
+
+        Args:
+            move (Move): The move to add to the pieces moves list.
+        """
         self.moves.append(move)
     
     def clear_moves(self):
+        """Clears the pieces moves list."""
         self.moves = []
     
-    def get_move_from_initial_final(self, initial, final):
+    def get_move_from_initial_final(self, initial: Square, final: Square) -> Move | None:
+        """Given an initial square and a final square, check in the piece's moves list
+        for a move with the given initial and final squares and return it if present,
+        else return None.
+        
+        Args:
+            initial (Square): The initial square.
+            final (Square): The final square.
+        
+        Returns:
+            Move | None:
+             - Move: If a move with the initial and final squares is present, return it.
+             - None: Else, return None.
+        """
         for move in self.moves:
             if move.initial == initial and move.final == final:
                 return move
         return None
     
     def return_to_home(self):
+        """If the piece is not at the fruiting position, return it to its home
+        position.
+        """
         if not self.is_fruit():
             self.position = self.home_position * 1
     
     def set_texture(self, size:int=80):
+        """Set the path to the texture of the given size.
+
+        Args:
+            size (int, optional): The size of the texture to be used. Defaults to 80.
+        """
         self.texture = os.path.join(f"assets/images/imgs-{size}px/{self.color}.png")
 
 class TiedPiece(Piece):
@@ -55,14 +112,10 @@ class TiedPiece(Piece):
         self.position = position
         self.name = "TiedPiece"
     
-    def move(self, places):
-        # if self.can_move(places):
-        self.position += places
-    
-    def can_move(self, places):
-        return ((places % 2) == 0 and (self.position + places) <= self.fruit_position)
-    
     def return_to_home(self):
+        """If the piece is not at the fruiting position, return both its pieces
+        to their home position.
+        """
         if not self.is_fruit():
             for piece in self.pieces:
                 piece.return_to_home()

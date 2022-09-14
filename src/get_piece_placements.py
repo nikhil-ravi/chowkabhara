@@ -1,3 +1,15 @@
+"""This script generates the positions in a square to place the pieces that it contains.
+It assumes that each piece in a square is a circle with radius r.
+It then solves the circle packing problem to pack the piece circles in a square of length
+SQSIZE.
+
+Instead of solving the problem, we use the API available at:
+"http://hydra.nat.uni-magdeburg.de/cgi-bin/csq1.pl?size={<enter_square_length>}&diameter={<enter_circle_diameter>}&name=&addr="
+
+The piece positions are saved to src/piece_placements.json as a dictionary where
+the keys are the number of pieces and the values are a list of positions for those pieces.
+"""
+
 import json
 import requests
 import lxml.html as lh

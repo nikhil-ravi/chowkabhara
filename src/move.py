@@ -1,12 +1,17 @@
+from dataclasses import dataclass
+from typing import Optional
 from square import Square
 
 
+@dataclass
 class Move:
-    def __init__(self, initial: Square, final: Square, tying_move: bool = False):
-        self.initial = initial
-        self.final = final
-        self.tying_move = tying_move
-
+    """A dataclass to represent a move. It contains a initial Square and a final
+    Square. A move that ties two piece together to create a TiedPiece needs a further
+    tying_move field to be passed with a value set at True."""
+    initial: Square
+    final: Square
+    tying_move: Optional[bool] = False
+    
     def __repr__(self):
         return f"({self.initial.row}, {self.initial.col}) -> ({self.final.row}, {self.final.col})"
 

@@ -19,6 +19,7 @@ class Main:
         self.game = Game()
 
     def mainloop(self):
+        """The main loop of the game."""
         screen = self.screen
         game = self.game
         board = self.game.board
@@ -67,6 +68,7 @@ class Main:
                             game.show_bg(screen)
                             game.show_moves(screen)
                             game.show_pieces(screen)
+                            game.show_hover(screen)
                             dragger.update_blit(screen)
                 elif event.type == pygame.MOUSEBUTTONUP:
                     if game.current_stage == "MAKE_MOVE" and dragger.dragging:
@@ -80,7 +82,7 @@ class Main:
                         if board.valid_move(dragger.piece, move):
                             move = dragger.piece.get_move_from_initial_final(move.initial, move.final)
                             if board.squares[released_row][released_col].has_enemy_piece(game.next_player) and (
-                                not board.squares[released_row][released_col].is_safe_house()
+                                not board.squares[released_row][released_col].is_safe_house
                             ):
                                 captured = True
                             else:

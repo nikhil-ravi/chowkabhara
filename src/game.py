@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Tuple
 import pygame
 from constants import (
     SQSIZE,
@@ -19,6 +20,8 @@ import numpy as np
 
 
 class Game:
+    """The main game class."""
+
     def __init__(self):
         self.number_of_players = 2
         self.players = list(PieceColor.__members__.keys())[: self.number_of_players]
@@ -32,14 +35,24 @@ class Game:
         self.dragger = Dragger()
         self.config = Config()
 
-    def show_bg(self, surface):
+    def show_bg(self, surface: pygame.Surface):
+        """Shows the background on the given pygame surface.
+
+        Args:
+            surface (pygame.Surface): The pygame surface to draw the background on.
+        """
         theme = self.config.theme
         surface.fill(theme.value.light)
         self._draw_lines(surface, theme.value.dark)
         self._draw_safe_houses(surface, theme.value.dark)
         self._draw_letter_markings(surface, theme.value.dark)
 
-    def show_pieces(self, surface):
+    def show_pieces(self, surface: pygame.Surface):
+        """Draws the piece on the given surface at their respective positions.
+
+        Args:
+            surface (pygame.Surface): The pygame surface to draw the pieces on.
+        """
         for row in range(ROWS):
             for col in range(COLS):
                 if self.board.squares[row][col].has_pieces:
@@ -59,7 +72,12 @@ class Game:
                             piece.texture_rect = img.get_rect(center=img_center)
                             surface.blit(img, piece.texture_rect)
 
-    def show_hover(self, surface):
+    def show_hover(self, surface: pygame.Surface):
+        """Shows the hovered square.
+
+        Args:
+            surface (pygame.Surface): The surface to show the hovered square.
+        """
         if self.hovered_sqr:
             # color
             color = (180, 180, 180)
@@ -74,38 +92,60 @@ class Game:
             pygame.draw.rect(surface, color, rect, width=3)
 
     def next_turn(self):
+        """If the current player has made all their moves (the board's roll vector
+        is empty), this method changes the turn to the next player in the
+        :py:class:`piece.PieceColor` enum.
+        """
         if not self.board.roll:
             self.next_player_id += 1
             self.next_player_id %= self.number_of_players
             self.next_player = self.players[self.next_player_id]
 
     def next_action(self):
+        """Change to the next action."""
         if self.current_stage == "ROLL":
             self.board.roll()
         elif self.current_stage == "MAKE_MOVE":
-            self.wait()
+            self.current_stage = "MAKE_MOVE"
         else:
             self.next_turn()
 
-    def wait(self):
-        self.current_stage = "MAKE_MOVE"
+    def set_hover(self, row: int, col: int):
+        """Set the hovered square to the square at row and col.
 
-    def set_hover(self, row, col):
+        Args:
+            row (int): The row of the square.
+            col (int): The col of the square.
+        """
         self.hovered_sqr = self.board.squares[row][col]
 
     def change_theme(self):
+        """Changes the game theme."""
         self.config.change_theme()
 
-    def play_sound(self, captured=False):
+    def play_sound(self, captured: bool = False):
+        """Play the move sound when a piece is moved and the capture sound when
+        a piece is captured.
+
+        Args:
+            captured (bool, optional): Whether a piece was captured. Defaults to False.
+        """
         if captured:
             self.config.capture_sound.play()
         else:
             self.config.move_sound.play()
 
     def reset(self):
+        """Resets the game."""
         self.__init__()
 
-    def _draw_lines(self, surface, line_color):
+    def _draw_lines(self, surface: pygame.Surface, line_color: Tuple[int, int, int]):
+        """Draw the lines on the board to represent the squares.
+
+        Args:
+            surface (pygame.Surface): The pygame surface to draw on.
+            line_color (Tuple[int, int, int]): The line color supplied as R,G,B values.
+        """
         for col in range(COLS + 1):
             pygame.draw.line(
                 surface,
@@ -123,7 +163,15 @@ class Game:
                 LINE_WIDTH,
             )
 
-    def _draw_safe_houses(self, surface, line_color):
+    def _draw_safe_houses(
+        self, surface: pygame.Surface, line_color: Tuple[int, int, int]
+    ):
+        """Draw the lines on the board to represent the safe house squares.
+
+        Args:
+            surface (pygame.Surface): The pygame surface to draw on.
+            line_color (Tuple[int, int, int]): The line color supplied as R,G,B values.
+        """
         for (row, col) in SAFE_HOUSES:
             pygame.draw.line(
                 surface,
@@ -140,7 +188,15 @@ class Game:
                 LINE_WIDTH,
             )
 
-    def _draw_letter_markings(self, surface, font_color):
+    def _draw_letter_markings(
+        self, surface: pygame.Surface, font_color: Tuple[int, int, int]
+    ):
+        """Draw the column and row markers on the board.
+
+        Args:
+            surface (pygame.Surface): The pygame surface to draw on.
+            font_color (Tuple[int, int, int]): The font color supplied as R,G,B values.
+        """
         for row in range(ROWS):
             for col in range(COLS):
                 if col == 0:
@@ -160,7 +216,12 @@ class Game:
                     # blit
                     surface.blit(lbl, lbl_pos)
 
-    def show_roll(self, surface):
+    def show_roll(self, surface: pygame.Surface):
+        """Show the roll the current player has.
+
+        Args:
+            surface (pygame.Surface): The pygame surface to draw on.
+        """
         theme = self.config.theme
         lbl = self.config.font.render(
             ",".join([str(roll) for roll in self.board.roll]), 5, theme.value.dark
@@ -169,7 +230,12 @@ class Game:
         # blit
         surface.blit(lbl, lbl_pos)
 
-    def show_moves(self, surface):
+    def show_moves(self, surface: pygame.Surface):
+        """Show the moves of the current :meth:`src.dragger.piece`
+
+        Args:
+            surface (pygame.Surface): The pygame surface to draw on.
+        """
         theme = self.config.theme
 
         if self.dragger.dragging:
@@ -189,13 +255,26 @@ class Game:
                 # blit
                 self.draw_rect_alpha(surface, color, rect)
 
-    def draw_rect_alpha(self, surface, color, rect):
+    def draw_rect_alpha(
+        self,
+        surface: pygame.Surface,
+        color: Tuple[int, int, int, int],
+        rect: Tuple[int, int, int, int],
+    ):
+        """Draw a rectangle with the given color and alpha.
+
+        Args:
+            surface (pygame.Surface): The pygame surface to draw on.
+            color (Tuple[int, int, int, int]): The (R,G,B) color and alpha for the rectangle.
+            rect (Tuple[int, int, int, int]): The rectangle to draw.
+        """
         shape_surf = pygame.Surface(pygame.Rect(rect).size, pygame.SRCALPHA)
         pygame.draw.rect(shape_surf, color, shape_surf.get_rect())
         surface.blit(shape_surf, rect)
 
 
 class GameStage(Enum):
+    """Enumeration of the different stages of the game."""
     ROLL = 1
     MAKE_MOVE = 2
     NEXT_TURN = 3
