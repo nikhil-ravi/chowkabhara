@@ -1,7 +1,7 @@
 from dataclasses import field, dataclass
 from typing import List, Optional
 from piece import Piece, PieceColor, TiedPiece
-from constants import ROWS, COLS, SAFE_HOUSES
+from constants import COLS, SAFE_HOUSES
 
 
 @dataclass
