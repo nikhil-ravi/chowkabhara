@@ -21,7 +21,7 @@ class Square:
     def __eq__(self, other):
         return self.row == other.row and self.col == other.col
 
-    # @property
+    @property
     def is_safe_house(self) -> bool:
         """Check if the square is a safe house.
 
@@ -82,11 +82,7 @@ class Square:
         """
         if self.has_pieces():
             for other_piece in self.pieces:
-                if (
-                    other_piece.color == piece.color
-                    and other_piece.name == "Piece"
-                    and other_piece != piece
-                ):
+                if other_piece.color == piece.color and other_piece.name == "Piece" and other_piece != piece:
                     return other_piece
         return None
 
@@ -128,18 +124,20 @@ class Square:
     @staticmethod
     def get_alphacol(col: int) -> str:
         """Return the column's alphabetic character
-        
+
         Args:
             col (int): The column number.
-            
+
         Returns:
             str: The column's alphabetic character.
         """
         ALPHACOLS = {col_: chr(col_ + 97) for col_ in range(COLS)}
         return ALPHACOLS[col]
 
+
 class InvalidAliasException(Exception):
     """Exception raised when an invalid alias is used."""
+
     def __init__(self, val, *args):
         super().__init__(args)
         self.val = val
