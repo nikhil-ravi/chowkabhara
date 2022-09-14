@@ -40,9 +40,7 @@ class Main:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if game.current_stage == "ROLL":
                         board.kawade()
-                        pygame.display.set_caption(
-                            f"Chowka Bhara: Player {game.next_player} - Make Move! {board.roll}"
-                        )
+                        pygame.display.set_caption(f"Chowka Bhara: Player {game.next_player} - Make Move! {board.roll}")
                         game.current_stage = "MAKE_MOVE"
                     elif game.current_stage == "MAKE_MOVE":
                         dragger.update_mouse(event.pos)
@@ -53,9 +51,7 @@ class Main:
                                 if piece.texture_rect.collidepoint(event.pos):
                                     selected_piece = piece
                                     if selected_piece.color == game.next_player:
-                                        board.calc_moves(
-                                            selected_piece, clicked_row, clicked_col
-                                        )
+                                        board.calc_moves(selected_piece, clicked_row, clicked_col)
                                         dragger.save_initial(event.pos)
                                         dragger.drag_piece(selected_piece)
                                         game.show_bg(screen)
@@ -77,20 +73,14 @@ class Main:
                         dragger.update_mouse(event.pos)
                         released_row = dragger.mouseY // SQSIZE
                         released_col = dragger.mouseX // SQSIZE
-                        initial = Square(
-                            row=dragger.initial_row, col=dragger.initial_col
-                        )
+                        initial = Square(row=dragger.initial_row, col=dragger.initial_col)
                         final = Square(row=released_row, col=released_col)
                         move = Move(initial=initial, final=final)
 
                         if board.valid_move(dragger.piece, move):
                             move = dragger.piece.get_move_from_initial_final(move.initial, move.final)
-                            if board.squares[released_row][
-                                released_col
-                            ].has_enemy_piece(game.next_player) and (
-                                not board.squares[released_row][
-                                    released_col
-                                ].is_safe_house()
+                            if board.squares[released_row][released_col].has_enemy_piece(game.next_player) and (
+                                not board.squares[released_row][released_col].is_safe_house()
                             ):
                                 captured = True
                             else:
@@ -105,13 +95,9 @@ class Main:
 
                     if len(board.roll) == 0:
                         game.current_stage = "ROLL"
-                        pygame.display.set_caption(
-                            f"Chowka Bhara: Roll for player {game.next_player}"
-                        )
+                        pygame.display.set_caption(f"Chowka Bhara: Roll for player {game.next_player}")
                     else:
-                        pygame.display.set_caption(
-                            f"Chowka Bhara: Player {game.next_player} - Make Move! {board.roll}"
-                        )
+                        pygame.display.set_caption(f"Chowka Bhara: Player {game.next_player} - Make Move! {board.roll}")
                     dragger.undrag_piece()
 
             pygame.display.update()

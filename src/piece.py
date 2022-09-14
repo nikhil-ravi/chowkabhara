@@ -2,14 +2,14 @@ from __future__ import annotations
 from enum import Enum
 import os
 from typing import List
-from constants import PLACES_TO_FRUIT, PLACES_BEFORE_INNER
+from constants import PLACES_TO_FRUIT, PLACES_BEFORE_INNER, GRID_OFFSET
 
 class Piece:
     
     def __init__(self, color: PieceColor, texture= None, texture_rect =None):
         self.name = "Piece"
         self.color = color
-        self.home_position = PieceColor[self.color].value * 100
+        self.home_position = PieceColor[self.color].value * GRID_OFFSET
         self.position = self.home_position * 1
         self.final_outer_position = self.home_position + PLACES_BEFORE_INNER
         self.fruit_position = self.home_position + PLACES_TO_FRUIT
