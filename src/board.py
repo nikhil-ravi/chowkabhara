@@ -132,14 +132,14 @@ class Board:
                 )  # //TODO
                 self.set_capture_flag(color)
             if color == "Green":
-                self.squares[2][1] = Square(
-                    row=2,
-                    col=1,
-                    pieces=[TiedPiece(color, 135, [Piece(color), Piece(color)])],
-                )  # //TODO
-                # self.squares[4][5] = Square(row=4, col=5, pieces=[Piece(color), Piece(color)])  # //TODO
-                # self.squares[4][5].pieces[0].position = 127
-                # self.squares[4][5].pieces[1].position = 127
+                # self.squares[2][1] = Square(
+                #     row=2,
+                #     col=1,
+                #     pieces=[TiedPiece(color, 135, [Piece(color), Piece(color)])],
+                # )  # //TODO
+                self.squares[5][5] = Square(row=5, col=5, pieces=[Piece(color), Piece(color)])  # //TODO
+                self.squares[5][5].pieces[0].position = 128
+                self.squares[5][5].pieces[1].position = 128
 
                 # self.squares[2][5] = Square(row=2, col=5, pieces=[Piece(color)])  # //TODO
                 # self.squares[2][5].pieces[0].position = 125
@@ -286,7 +286,11 @@ class Board:
         color = piece.color
         if piece.name == "Piece" and not piece.with_enemy_tied_piece:
             can_tie = (
-                True if self.squares[row][col].get_other_single_team_piece(piece) and piece.name == "Piece" else False
+                True
+                if self.squares[row][col].get_other_single_team_piece(piece)
+                and piece.name == "Piece"
+                and not self.squares[row][col].is_safe_house
+                else False
             )
             can_go_till = piece.fruit_position if self.player_captured_flags[color] else piece.final_outer_position
             for places in sorted(self.roll):
@@ -383,7 +387,7 @@ class Board:
                     )
                 )
         else:
-            self.roll = [4, 2]
+            self.roll = [2]
 
     def clear_enemy_pieces_with_player_tied_piece(self, color: PieceColor):
         """Clear the flag on all enemy pieces that are on the same square the
