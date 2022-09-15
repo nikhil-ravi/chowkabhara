@@ -107,7 +107,7 @@ class Board:
         for player in self.players:
             self._add_pieces_for_player(player)
 
-    def _add_pieces_for_player(self, color: PieceColor, testing=False):
+    def _add_pieces_for_player(self, color: PieceColor, testing: bool = False):
         """For the given player, add PIECES_PER_PLAYER number of Pieces to its
         initial square.
 
@@ -132,16 +132,21 @@ class Board:
                 )  # //TODO
                 self.set_capture_flag(color)
             if color == "Green":
-                self.squares[4][5] = Square(row=4, col=5, pieces=[Piece(color), Piece(color)])  # //TODO
-                self.squares[4][5].pieces[0].position = 127
-                self.squares[4][5].pieces[1].position = 127
+                self.squares[2][1] = Square(
+                    row=2,
+                    col=1,
+                    pieces=[TiedPiece(color, 135, [Piece(color), Piece(color)])],
+                )  # //TODO
+                # self.squares[4][5] = Square(row=4, col=5, pieces=[Piece(color), Piece(color)])  # //TODO
+                # self.squares[4][5].pieces[0].position = 127
+                # self.squares[4][5].pieces[1].position = 127
 
-                self.squares[2][5] = Square(row=2, col=5, pieces=[Piece(color)])  # //TODO
-                self.squares[2][5].pieces[0].position = 125
+                # self.squares[2][5] = Square(row=2, col=5, pieces=[Piece(color)])  # //TODO
+                # self.squares[2][5].pieces[0].position = 125
 
-                tempPiece = Piece(color)
-                tempPiece.position = 132
-                self.squares[5][1].pieces.append(tempPiece)  # //TODO
+                # tempPiece = Piece(color)
+                # tempPiece.position = 132
+                # self.squares[5][1].pieces.append(tempPiece)  # //TODO
                 self.set_capture_flag(color)
 
     def move(self, piece: Piece | TiedPiece, move: Move):
@@ -202,7 +207,11 @@ class Board:
                 if not (enemy_piece.name == "TiedPiece" and piece.name == "Piece"):
                     home_row, home_col = self.get_alias_to_row_col(enemy_piece.home_position)
                     self.squares[final.row][final.col].remove_piece(enemy_piece)
-                    self.squares[home_row][home_col].add_piece(enemy_piece)
+                    if enemy_piece.name == "TiedPiece":
+                        for enemy_piece_component_piece in enemy_piece.pieces:
+                            self.squares[home_row][home_col].add_piece(enemy_piece_component_piece)
+                    else:
+                        self.squares[home_row][home_col].add_piece(enemy_piece)
                     self.player_captured_flags[piece.color] = True
                     enemy_piece.moved = False
                     enemy_piece.return_to_home()
