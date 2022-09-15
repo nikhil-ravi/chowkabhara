@@ -89,12 +89,30 @@ class Square:
     def has_enemy_piece(self, color: PieceColor) -> bool:
         """Check whether a square has an enemy piece.
 
+        Args:
+            color (PieceColor): The player's color.
+
         Returns:
             bool: True if the square has an enemy piece.
         """
         if self.has_pieces():
             for piece in self.pieces:
                 if piece.color != color:
+                    return True
+        return False
+
+    def has_enemy_tied_piece(self, color: PieceColor) -> bool:
+        """Check whether the square has a TiedPiece belonging to an enemy player.
+
+        Args:
+            color (PieceColor): The player's color.
+
+        Returns:
+            bool: True if the square has an enemy TiedPiece.
+        """
+        if self.has_pieces():
+            for piece in self.pieces:
+                if piece.color != color and piece.name == "TiedPiece":
                     return True
         return False
 

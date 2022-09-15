@@ -19,6 +19,7 @@ class Piece:
         self.color = color
         self.texture = texture
         self.texture_rect = texture_rect
+        self.set_texture()
         
         self.name = "Piece"
         self.home_position = PieceColor[self.color].value * GRID_OFFSET
@@ -27,7 +28,7 @@ class Piece:
         self.fruit_position = self.home_position + PLACES_TO_FRUIT
         self.moves = []
         self.img_center = None
-        self.set_texture()
+        self.with_enemy_tied_piece = False
     
     def move(self, places: int):
         """Update the piece's position by the given number of places.
@@ -70,6 +71,14 @@ class Piece:
         """Clears the pieces moves list."""
         self.moves = []
     
+    def set_with_enemy_tied_piece(self):
+        """Sets the with enemy TiedPiece Flag."""
+        self.with_enemy_tied_piece = True
+            
+    def clear_with_enemy_tied_piece(self):
+        """Clears the with enemy TiedPiece Flag."""
+        self.with_enemy_tied_piece = False
+            
     def return_to_home(self):
         """If the piece is not at the fruiting position, return it to its home
         position.
@@ -104,7 +113,7 @@ class TiedPiece(Piece):
         self.texture = os.path.join(f"assets/images/imgs-{size}px/Tied{self.color}.png")
         
     def __repr__(self) -> str:
-        return f"{self.color=}: {self.position=} with {self.pieces=}"
+        return f"{self.name}({self.color=}: {self.position=} with {self.pieces=})"
  
 class PieceColor(Enum):
     """A class of colors for the players."""
