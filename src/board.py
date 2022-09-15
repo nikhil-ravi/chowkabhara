@@ -312,7 +312,6 @@ class Board:
                                 Square(row=final_row, col=final_col),
                             )
                             piece.add_move(move_to_add)
-                            print(f"Added {move_to_add=} normal move")
                     if places == 2 and can_tie and (piece.position % GRID_OFFSET > PLACES_BEFORE_INNER):
                         final_row, final_col = self.get_alias_to_row_col(piece.position + 1)
                         final_Square = Square(row=final_row, col=final_col)
@@ -323,7 +322,6 @@ class Board:
                                 tying_move=True,
                             )
                             piece.add_move(move_to_add)
-                            print(f"Added {move_to_add=} to tie pieces")
                 else:
                     break
         if piece.name == "TiedPiece":
@@ -339,7 +337,6 @@ class Board:
                             Square(row=final_row, col=final_col),
                         )
                         piece.add_move(move_to_add)
-                        print(f"Added {move_to_add=} for the Tied Piece")
 
     def intermediate_squares_have_enemy_tied_pieces(self, piece: Piece, places: int) -> bool:
         """Checks whether there are any enemy TiedPieces between the piece's location
