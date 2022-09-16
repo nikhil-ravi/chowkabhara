@@ -35,7 +35,7 @@ class Game:
         self.dragger = Dragger()
         self.config = Config()
         self.player_has_finished = []
-        self.running = False
+        self.running = True
 
     def show_bg(self, surface: pygame.Surface):
         """Shows the background on the given pygame surface.
