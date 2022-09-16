@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Optional, Tuple
 from constants import *
 from move import Move
 from square import InvalidAliasException, Square
@@ -230,6 +230,7 @@ class Board:
 
         piece.moved = True
         piece.clear_moves()
+        
 
     def valid_move(self, piece: Piece | TiedPiece, move: Move) -> bool:
         """Checks whether a move is valid.
@@ -269,15 +270,17 @@ class Board:
         else:
             return self.alias_to_row_col[alias]
 
-    def calc_moves(self, piece: Piece, row: int, col: int):
+    def can_move(self, player) -> bool:
+        return True
+        
+        
+    def calc_moves(self, piece: Piece):
         """Calculate which of moves from the roll the given Piece at row and col
         can undertake. It first clears the piece's moves vector and then populates
         it with the latest moves available.
 
         Args:
             piece (Piece): The piece whose moves are to be calculated.
-            row (int): The row of the square with the given piece.
-            col (int): The column of the square with the given piece.
         """
         piece.clear_moves()
         if piece.is_fruit():
@@ -325,7 +328,6 @@ class Board:
                 else:
                     break
         if piece.name == "TiedPiece":
-            piece.clear_moves()
             can_go_till = piece.fruit_position
             for places in self.roll:
                 if places % 2 == 0:
@@ -397,3 +399,13 @@ class Board:
             for piece in self.enemy_piece_with_player_tied_piece[color]:
                 piece.clear_with_enemy_tied_piece()
             self.enemy_piece_with_player_tied_piece[color] = None
+    
+    def has_player_finished(self, player: PieceColor):
+        fruited_pieces = 0
+        for piece in self.squares[ROWS//2][COLS//2].pieces:
+            if piece.color == player:
+                fruited_pieces += 1
+        if fruited_pieces == PIECES_PER_PLAYER:
+            return True
+        return False
+                

@@ -34,6 +34,8 @@ class Game:
         self.board = Board(players=self.players)
         self.dragger = Dragger()
         self.config = Config()
+        self.player_has_finished = []
+        self.running = False
 
     def show_bg(self, surface: pygame.Surface):
         """Shows the background on the given pygame surface.
@@ -62,7 +64,9 @@ class Game:
                         if piece is not self.dragger.piece:
                             piece.set_texture(size=80)
                             img = pygame.image.load(piece.texture)
-                            img = pygame.transform.rotozoom(img, 0, 1 / np.sqrt(len(pieces)))
+                            img = pygame.transform.rotozoom(
+                                img, 0, 1 / np.sqrt(len(pieces))
+                            )
                             img_center = (
                                 col * SQSIZE + IMG_CENTERS[len(pieces)][piece_idx][0],
                                 row * SQSIZE + IMG_CENTERS[len(pieces)][piece_idx][1],
@@ -96,8 +100,9 @@ class Game:
         """
         if not self.board.roll:
             self.board.clear_enemy_pieces_with_player_tied_piece(self.next_player)
-            self.next_player_id += 1
-            self.next_player_id %= self.number_of_players
+            self.next_player_id = (self.next_player_id + 1) % self.number_of_players
+            while self.next_player_id in self.player_has_finished:
+                self.next_player_id = (self.next_player_id + 1) % self.number_of_players
             self.next_player = self.players[self.next_player_id]
 
     def next_action(self):
@@ -162,7 +167,9 @@ class Game:
                 LINE_WIDTH,
             )
 
-    def _draw_safe_houses(self, surface: pygame.Surface, line_color: Tuple[int, int, int]):
+    def _draw_safe_houses(
+        self, surface: pygame.Surface, line_color: Tuple[int, int, int]
+    ):
         """Draw the lines on the board to represent the safe house squares.
 
         Args:
@@ -185,7 +192,9 @@ class Game:
                 LINE_WIDTH,
             )
 
-    def _draw_letter_markings(self, surface: pygame.Surface, font_color: Tuple[int, int, int]):
+    def _draw_letter_markings(
+        self, surface: pygame.Surface, font_color: Tuple[int, int, int]
+    ):
         """Draw the column and row markers on the board.
 
         Args:
@@ -204,7 +213,9 @@ class Game:
                 # col coordinates
                 if row == 6:
                     # label
-                    lbl = self.config.font.render(Square.get_alphacol(col), 1, font_color)
+                    lbl = self.config.font.render(
+                        Square.get_alphacol(col), 1, font_color
+                    )
                     lbl_pos = (col * SQSIZE + SQSIZE - 20, HEIGHT - 20)
                     # blit
                     surface.blit(lbl, lbl_pos)
@@ -216,7 +227,9 @@ class Game:
             surface (pygame.Surface): The pygame surface to draw on.
         """
         theme = self.config.theme
-        lbl = self.config.font.render(",".join([str(roll) for roll in self.board.roll]), 5, theme.value.dark)
+        lbl = self.config.font.render(
+            ",".join([str(roll) for roll in self.board.roll]), 5, theme.value.dark
+        )
         lbl_pos = (3 * SQSIZE, 3 * SQSIZE)
         # blit
         surface.blit(lbl, lbl_pos)
@@ -262,6 +275,13 @@ class Game:
         shape_surf = pygame.Surface(pygame.Rect(rect).size, pygame.SRCALPHA)
         pygame.draw.rect(shape_surf, color, shape_surf.get_rect())
         surface.blit(shape_surf, rect)
+
+    def is_over(self):
+        return (
+            True
+            if (len(self.player_has_finished) == (self.number_of_players - 1))
+            else False
+        )
 
 
 class GameStage(Enum):
