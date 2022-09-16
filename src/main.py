@@ -18,7 +18,7 @@ class Main:
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Chowka Bhara")
-        self.game = Game()
+        self.game = Game(number_of_players=2) # Can be between 2 and 4 players.
 
     def mainloop(self):
         """The main loop of the game."""

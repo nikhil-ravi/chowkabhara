@@ -22,8 +22,8 @@ import numpy as np
 class Game:
     """The main game class."""
 
-    def __init__(self):
-        self.number_of_players = 2
+    def __init__(self, number_of_players: int = 2):
+        self.number_of_players = number_of_players
         self.players = list(PieceColor.__members__.keys())[: self.number_of_players]
         self.next_player_id = 0
         self.next_player = self.players[self.next_player_id]
