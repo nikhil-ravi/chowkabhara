@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>game &mdash; Chowka Bhara  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Chowka Bhara
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Chowka Bhara</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>game</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for game</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">pygame</span>
+<span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SQSIZE</span><span class="p">,</span>
+    <span class="n">IMG_CENTERS</span><span class="p">,</span>
+    <span class="n">ROWS</span><span class="p">,</span>
+    <span class="n">COLS</span><span class="p">,</span>
+    <span class="n">SAFE_HOUSES</span><span class="p">,</span>
+    <span class="n">LINE_WIDTH</span><span class="p">,</span>
+    <span class="n">HEIGHT</span><span class="p">,</span>
+    <span class="n">WIDTH</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">board</span> <span class="kn">import</span> <span class="n">Board</span>
+<span class="kn">from</span> <span class="nn">dragger</span> <span class="kn">import</span> <span class="n">Dragger</span>
+<span class="kn">from</span> <span class="nn">piece</span> <span class="kn">import</span> <span class="n">PieceColor</span>
+<span class="kn">from</span> <span class="nn">config</span> <span class="kn">import</span> <span class="n">Config</span>
+<span class="kn">from</span> <span class="nn">square</span> <span class="kn">import</span> <span class="n">Square</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="Game"><a class="viewcode-back" href="../code.html#game.Game">[docs]</a><span class="k">class</span> <span class="nc">Game</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The main game class.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number_of_players</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_players</span> <span class="o">=</span> <span class="n">number_of_players</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">players</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">PieceColor</span><span class="o">.</span><span class="n">__members__</span><span class="o">.</span><span class="n">keys</span><span class="p">())[:</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_players</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_player_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">players</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">next_player_id</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_stages</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">GameStage</span><span class="o">.</span><span class="n">__members__</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_stage_id</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_stage</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_stages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">game_stage_id</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hovered_sqr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">board</span> <span class="o">=</span> <span class="n">Board</span><span class="p">(</span><span class="n">players</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">players</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dragger</span> <span class="o">=</span> <span class="n">Dragger</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">Config</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player_has_finished</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="Game.show_bg"><a class="viewcode-back" href="../code.html#game.Game.show_bg">[docs]</a>    <span class="k">def</span> <span class="nf">show_bg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shows the background on the given pygame surface.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            surface (pygame.Surface): The pygame surface to draw the background on.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">theme</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">theme</span>
+        <span class="n">surface</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="n">theme</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">light</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_draw_lines</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">theme</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">dark</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_draw_safe_houses</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">theme</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">dark</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_draw_letter_markings</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">theme</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">dark</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Game.show_pieces"><a class="viewcode-back" href="../code.html#game.Game.show_pieces">[docs]</a>    <span class="k">def</span> <span class="nf">show_pieces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Draws the piece on the given surface at their respective positions.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            surface (pygame.Surface): The pygame surface to draw the pieces on.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ROWS</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">COLS</span><span class="p">):</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">squares</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">has_pieces</span><span class="p">:</span>
+                    <span class="n">pieces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">squares</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">pieces</span>
+
+                    <span class="k">for</span> <span class="n">piece_idx</span><span class="p">,</span> <span class="n">piece</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pieces</span><span class="p">):</span>
+                        <span class="k">if</span> <span class="n">piece</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragger</span><span class="o">.</span><span class="n">piece</span><span class="p">:</span>
+                            <span class="n">piece</span><span class="o">.</span><span class="n">set_texture</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
+                            <span class="n">img</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">image</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">piece</span><span class="o">.</span><span class="n">texture</span><span class="p">)</span>
+                            <span class="n">img</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">rotozoom</span><span class="p">(</span>
+                                <span class="n">img</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pieces</span><span class="p">))</span>
+                            <span class="p">)</span>
+                            <span class="n">img_center</span> <span class="o">=</span> <span class="p">(</span>
+                                <span class="n">col</span> <span class="o">*</span> <span class="n">SQSIZE</span> <span class="o">+</span> <span class="n">IMG_CENTERS</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">pieces</span><span class="p">)][</span><span class="n">piece_idx</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="n">row</span> <span class="o">*</span> <span class="n">SQSIZE</span> <span class="o">+</span> <span class="n">IMG_CENTERS</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">pieces</span><span class="p">)][</span><span class="n">piece_idx</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                            <span class="p">)</span>
+                            <span class="n">piece</span><span class="o">.</span><span class="n">texture_rect</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="n">img_center</span><span class="p">)</span>
+                            <span class="n">surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">piece</span><span class="o">.</span><span class="n">texture_rect</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Game.show_hover"><a class="viewcode-back" href="../code.html#game.Game.show_hover">[docs]</a>    <span class="k">def</span> <span class="nf">show_hover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Shows the hovered square.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            surface (pygame.Surface): The surface to show the hovered square.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">hovered_sqr</span><span class="p">:</span>
+            <span class="c1"># color</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">)</span>
+            <span class="c1"># rect</span>
+            <span class="n">rect</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hovered_sqr</span><span class="o">.</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hovered_sqr</span><span class="o">.</span><span class="n">row</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">,</span>
+                <span class="n">SQSIZE</span><span class="p">,</span>
+                <span class="n">SQSIZE</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># blit</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">rect</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Game.next_turn"><a class="viewcode-back" href="../code.html#game.Game.next_turn">[docs]</a>    <span class="k">def</span> <span class="nf">next_turn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;If the current player has made all their moves (the board&#39;s roll vector</span>
+<span class="sd">        is empty), this method changes the turn to the next player in the</span>
+<span class="sd">        :py:class:`piece.PieceColor` enum.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">roll</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">clear_enemy_pieces_with_player_tied_piece</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_player</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next_player_id</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_player_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_players</span>
+            <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_player_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_has_finished</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">next_player_id</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">next_player_id</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_players</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next_player</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">players</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">next_player_id</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Game.next_action"><a class="viewcode-back" href="../code.html#game.Game.next_action">[docs]</a>    <span class="k">def</span> <span class="nf">next_action</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Change to the next action.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_stage</span> <span class="o">==</span> <span class="s2">&quot;ROLL&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">roll</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_stage</span> <span class="o">==</span> <span class="s2">&quot;MAKE_MOVE&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_stage</span> <span class="o">=</span> <span class="s2">&quot;MAKE_MOVE&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next_turn</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Game.set_hover"><a class="viewcode-back" href="../code.html#game.Game.set_hover">[docs]</a>    <span class="k">def</span> <span class="nf">set_hover</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">col</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set the hovered square to the square at row and col.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            row (int): The row of the square.</span>
+<span class="sd">            col (int): The col of the square.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">hovered_sqr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">squares</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Game.change_theme"><a class="viewcode-back" href="../code.html#game.Game.change_theme">[docs]</a>    <span class="k">def</span> <span class="nf">change_theme</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Changes the game theme.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">change_theme</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Game.play_sound"><a class="viewcode-back" href="../code.html#game.Game.play_sound">[docs]</a>    <span class="k">def</span> <span class="nf">play_sound</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">captured</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Play the move sound when a piece is moved and the capture sound when</span>
+<span class="sd">        a piece is captured.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            captured (bool, optional): Whether a piece was captured. Defaults to False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">captured</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">capture_sound</span><span class="o">.</span><span class="n">play</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">move_sound</span><span class="o">.</span><span class="n">play</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Game.reset"><a class="viewcode-back" href="../code.html#game.Game.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Resets the game.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Game._draw_lines"><a class="viewcode-back" href="../code.html#game.Game._draw_lines">[docs]</a>    <span class="k">def</span> <span class="nf">_draw_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="n">line_color</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;Draw the lines on the board to represent the squares.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            surface (pygame.Surface): The pygame surface to draw on.</span>
+<span class="sd">            line_color (Tuple[int, int, int]): The line color supplied as R,G,B values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">COLS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span>
+                <span class="n">surface</span><span class="p">,</span>
+                <span class="n">line_color</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">,</span> <span class="n">HEIGHT</span><span class="p">),</span>
+                <span class="n">LINE_WIDTH</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ROWS</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span>
+                <span class="n">surface</span><span class="p">,</span>
+                <span class="n">line_color</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">row</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">),</span>
+                <span class="p">(</span><span class="n">WIDTH</span><span class="p">,</span> <span class="n">row</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">),</span>
+                <span class="n">LINE_WIDTH</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Game._draw_safe_houses"><a class="viewcode-back" href="../code.html#game.Game._draw_safe_houses">[docs]</a>    <span class="k">def</span> <span class="nf">_draw_safe_houses</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="n">line_color</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Draw the lines on the board to represent the safe house squares.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            surface (pygame.Surface): The pygame surface to draw on.</span>
+<span class="sd">            line_color (Tuple[int, int, int]): The line color supplied as R,G,B values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">)</span> <span class="ow">in</span> <span class="n">SAFE_HOUSES</span><span class="p">:</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span>
+                <span class="n">surface</span><span class="p">,</span>
+                <span class="n">line_color</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">,</span> <span class="n">row</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">),</span>
+                <span class="p">((</span><span class="n">col</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">),</span>
+                <span class="n">LINE_WIDTH</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span>
+                <span class="n">surface</span><span class="p">,</span>
+                <span class="n">line_color</span><span class="p">,</span>
+                <span class="p">((</span><span class="n">col</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">,</span> <span class="n">row</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">),</span>
+                <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">,</span> <span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">),</span>
+                <span class="n">LINE_WIDTH</span><span class="p">,</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Game._draw_letter_markings"><a class="viewcode-back" href="../code.html#game.Game._draw_letter_markings">[docs]</a>    <span class="k">def</span> <span class="nf">_draw_letter_markings</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span> <span class="n">font_color</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Draw the column and row markers on the board.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            surface (pygame.Surface): The pygame surface to draw on.</span>
+<span class="sd">            font_color (Tuple[int, int, int]): The font color supplied as R,G,B values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ROWS</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">COLS</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">col</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="c1"># label</span>
+                    <span class="n">lbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">ROWS</span> <span class="o">-</span> <span class="n">row</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">font_color</span><span class="p">)</span>
+                    <span class="n">lbl_pos</span> <span class="o">=</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span> <span class="o">+</span> <span class="n">row</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">)</span>
+                    <span class="c1"># blit</span>
+                    <span class="n">surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">lbl</span><span class="p">,</span> <span class="n">lbl_pos</span><span class="p">)</span>
+
+                <span class="c1"># col coordinates</span>
+                <span class="k">if</span> <span class="n">row</span> <span class="o">==</span> <span class="mi">6</span><span class="p">:</span>
+                    <span class="c1"># label</span>
+                    <span class="n">lbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+                        <span class="n">Square</span><span class="o">.</span><span class="n">get_alphacol</span><span class="p">(</span><span class="n">col</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">font_color</span>
+                    <span class="p">)</span>
+                    <span class="n">lbl_pos</span> <span class="o">=</span> <span class="p">(</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQSIZE</span> <span class="o">+</span> <span class="n">SQSIZE</span> <span class="o">-</span> <span class="mi">20</span><span class="p">,</span> <span class="n">HEIGHT</span> <span class="o">-</span> <span class="mi">20</span><span class="p">)</span>
+                    <span class="c1"># blit</span>
+                    <span class="n">surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">lbl</span><span class="p">,</span> <span class="n">lbl_pos</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Game.show_roll"><a class="viewcode-back" href="../code.html#game.Game.show_roll">[docs]</a>    <span class="k">def</span> <span class="nf">show_roll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Show the roll the current player has.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            surface (pygame.Surface): The pygame surface to draw on.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">theme</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">theme</span>
+        <span class="n">lbl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+            <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">roll</span><span class="p">)</span> <span class="k">for</span> <span class="n">roll</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">roll</span><span class="p">]),</span> <span class="mi">5</span><span class="p">,</span> <span class="n">theme</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">dark</span>
+        <span class="p">)</span>
+        <span class="n">lbl_pos</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">,</span> <span class="mi">3</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">)</span>
+        <span class="c1"># blit</span>
+        <span class="n">surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">lbl</span><span class="p">,</span> <span class="n">lbl_pos</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Game.show_moves"><a class="viewcode-back" href="../code.html#game.Game.show_moves">[docs]</a>    <span class="k">def</span> <span class="nf">show_moves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Show the moves of the current :meth:`src.dragger.piece`</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            surface (pygame.Surface): The pygame surface to draw on.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">theme</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">theme</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragger</span><span class="o">.</span><span class="n">dragging</span><span class="p">:</span>
+            <span class="n">piece</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dragger</span><span class="o">.</span><span class="n">piece</span>
+
+            <span class="c1"># loop all valid moves</span>
+            <span class="k">for</span> <span class="n">move</span> <span class="ow">in</span> <span class="n">piece</span><span class="o">.</span><span class="n">moves</span><span class="p">:</span>
+                <span class="c1"># color</span>
+                <span class="n">color</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">theme</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">dark</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+                <span class="c1"># rect</span>
+                <span class="n">rect</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="n">move</span><span class="o">.</span><span class="n">final</span><span class="o">.</span><span class="n">col</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">,</span>
+                    <span class="n">move</span><span class="o">.</span><span class="n">final</span><span class="o">.</span><span class="n">row</span> <span class="o">*</span> <span class="n">SQSIZE</span><span class="p">,</span>
+                    <span class="n">SQSIZE</span><span class="p">,</span>
+                    <span class="n">SQSIZE</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="c1"># blit</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">draw_rect_alpha</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">rect</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Game.draw_rect_alpha"><a class="viewcode-back" href="../code.html#game.Game.draw_rect_alpha">[docs]</a>    <span class="k">def</span> <span class="nf">draw_rect_alpha</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">surface</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">,</span>
+        <span class="n">color</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">rect</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Draw a rectangle with the given color and alpha.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            surface (pygame.Surface): The pygame surface to draw on.</span>
+<span class="sd">            color (Tuple[int, int, int, int]): The (R,G,B) color and alpha for the rectangle.</span>
+<span class="sd">            rect (Tuple[int, int, int, int]): The rectangle to draw.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">shape_surf</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">shape_surf</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">shape_surf</span><span class="o">.</span><span class="n">get_rect</span><span class="p">())</span>
+        <span class="n">surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">shape_surf</span><span class="p">,</span> <span class="n">rect</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Game.is_over"><a class="viewcode-back" href="../code.html#game.Game.is_over">[docs]</a>    <span class="k">def</span> <span class="nf">is_over</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="kc">True</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player_has_finished</span><span class="p">)</span> <span class="o">==</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number_of_players</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+            <span class="k">else</span> <span class="kc">False</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="GameStage"><a class="viewcode-back" href="../code.html#game.GameStage">[docs]</a><span class="k">class</span> <span class="nc">GameStage</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Enumeration of the different stages of the game.&quot;&quot;&quot;</span>
+
+    <span class="n">ROLL</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">MAKE_MOVE</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">NEXT_TURN</span> <span class="o">=</span> <span class="mi">3</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Nikhil Ravi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

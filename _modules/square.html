@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>square &mdash; Chowka Bhara  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../index.html" class="icon icon-home"> Chowka Bhara
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Chowka Bhara</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="index.html">Module code</a> &raquo;</li>
+      <li>square</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for square</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">field</span><span class="p">,</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">piece</span> <span class="kn">import</span> <span class="n">Piece</span><span class="p">,</span> <span class="n">PieceColor</span><span class="p">,</span> <span class="n">TiedPiece</span>
+<span class="kn">from</span> <span class="nn">constants</span> <span class="kn">import</span> <span class="n">COLS</span><span class="p">,</span> <span class="n">SAFE_HOUSES</span>
+
+
+<div class="viewcode-block" id="Square"><a class="viewcode-back" href="../code.html#square.Square">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">Square</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;The square class to represent the squares on the board.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        row (int): The row number of the square.</span>
+<span class="sd">        col (int): The column number of the square.</span>
+<span class="sd">        pieces (List[Piece | TiedPiece], optional): The pieces present in the square.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">row</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">col</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">pieces</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Piece</span><span class="p">]]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">row</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">row</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">col</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">col</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">is_safe_house</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check if the square is a safe house.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the square is a safe house.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">row</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">col</span><span class="p">)</span> <span class="ow">in</span> <span class="n">SAFE_HOUSES</span>
+
+<div class="viewcode-block" id="Square.has_pieces"><a class="viewcode-back" href="../code.html#square.Square.has_pieces">[docs]</a>    <span class="k">def</span> <span class="nf">has_pieces</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check if the square has pieces.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the square has pieces.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Square.isempty"><a class="viewcode-back" href="../code.html#square.Square.isempty">[docs]</a>    <span class="k">def</span> <span class="nf">isempty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check if the square is empty.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the square is empty.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_pieces</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Square.has_team_piece"><a class="viewcode-back" href="../code.html#square.Square.has_team_piece">[docs]</a>    <span class="k">def</span> <span class="nf">has_team_piece</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="n">PieceColor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check if the square has a piece of the given color.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the square has a piece of the given color.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_pieces</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">piece</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">piece</span><span class="o">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">color</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Square.has_single_team_piece"><a class="viewcode-back" href="../code.html#square.Square.has_single_team_piece">[docs]</a>    <span class="k">def</span> <span class="nf">has_single_team_piece</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="n">PieceColor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check if the square has a single (as in not a TiedPiece, not one) piece</span>
+<span class="sd">        of the given color.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the square has a single (as in not a TiedPiece, not one)</span>
+<span class="sd">            piece of the given color.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_pieces</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">piece</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">piece</span><span class="o">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">color</span> <span class="ow">and</span> <span class="n">piece</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Piece&quot;</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Square.get_other_single_team_piece"><a class="viewcode-back" href="../code.html#square.Square.get_other_single_team_piece">[docs]</a>    <span class="k">def</span> <span class="nf">get_other_single_team_piece</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">piece</span><span class="p">:</span> <span class="n">Piece</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;If the square has a single (as in not a TiedPiece, not one) piece</span>
+<span class="sd">        of the same color as the given piece, then return it.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool | None: Return the piece on the square of the same color as the given piece.</span>
+<span class="sd">            If none present, return None.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_pieces</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">other_piece</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="n">other_piece</span><span class="o">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">piece</span><span class="o">.</span><span class="n">color</span>
+                    <span class="ow">and</span> <span class="n">other_piece</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Piece&quot;</span>
+                    <span class="ow">and</span> <span class="n">other_piece</span> <span class="o">!=</span> <span class="n">piece</span>
+                <span class="p">):</span>
+                    <span class="k">return</span> <span class="n">other_piece</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Square.has_enemy_piece"><a class="viewcode-back" href="../code.html#square.Square.has_enemy_piece">[docs]</a>    <span class="k">def</span> <span class="nf">has_enemy_piece</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="n">PieceColor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check whether a square has an enemy piece.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            color (PieceColor): The player&#39;s color.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the square has an enemy piece.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_pieces</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">piece</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">piece</span><span class="o">.</span><span class="n">color</span> <span class="o">!=</span> <span class="n">color</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Square.has_enemy_tied_piece"><a class="viewcode-back" href="../code.html#square.Square.has_enemy_tied_piece">[docs]</a>    <span class="k">def</span> <span class="nf">has_enemy_tied_piece</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="n">PieceColor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check whether the square has a TiedPiece belonging to an enemy player.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            color (PieceColor): The player&#39;s color.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the square has an enemy TiedPiece.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_pieces</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">piece</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">piece</span><span class="o">.</span><span class="n">color</span> <span class="o">!=</span> <span class="n">color</span> <span class="ow">and</span> <span class="n">piece</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;TiedPiece&quot;</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Square.get_enemy_pieces"><a class="viewcode-back" href="../code.html#square.Square.get_enemy_pieces">[docs]</a>    <span class="k">def</span> <span class="nf">get_enemy_pieces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="n">PieceColor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Piece</span> <span class="o">|</span> <span class="n">TiedPiece</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;Return the enemy pieces.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            List[Piece | TiedPiece]: The list of enemy pieces.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">piece</span> <span class="k">for</span> <span class="n">piece</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span> <span class="k">if</span> <span class="n">piece</span><span class="o">.</span><span class="n">color</span> <span class="o">!=</span> <span class="n">color</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Square.isempty_or_enemy"><a class="viewcode-back" href="../code.html#square.Square.isempty_or_enemy">[docs]</a>    <span class="k">def</span> <span class="nf">isempty_or_enemy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">:</span> <span class="n">PieceColor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Check if the square is either empty or has enemy pieces.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True if the square is either empty or has enemy pieces.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">isempty</span><span class="p">()</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_enemy_piece</span><span class="p">(</span><span class="n">color</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Square.add_piece"><a class="viewcode-back" href="../code.html#square.Square.add_piece">[docs]</a>    <span class="k">def</span> <span class="nf">add_piece</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">piece</span><span class="p">:</span> <span class="n">Piece</span> <span class="o">|</span> <span class="n">TiedPiece</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a piece to the square&#39;s pieces list.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">piece</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Square.remove_piece"><a class="viewcode-back" href="../code.html#square.Square.remove_piece">[docs]</a>    <span class="k">def</span> <span class="nf">remove_piece</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">piece</span><span class="p">:</span> <span class="n">Piece</span> <span class="o">|</span> <span class="n">TiedPiece</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Remove a piece from the square&#39;s pieces list.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">piece</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Square.get_alphacol"><a class="viewcode-back" href="../code.html#square.Square.get_alphacol">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_alphacol</span><span class="p">(</span><span class="n">col</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Return the column&#39;s alphabetic character</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            col (int): The column number.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The column&#39;s alphabetic character.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">ALPHACOLS</span> <span class="o">=</span> <span class="p">{</span><span class="n">col_</span><span class="p">:</span> <span class="nb">chr</span><span class="p">(</span><span class="n">col_</span> <span class="o">+</span> <span class="mi">97</span><span class="p">)</span> <span class="k">for</span> <span class="n">col_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">COLS</span><span class="p">)}</span>
+        <span class="k">return</span> <span class="n">ALPHACOLS</span><span class="p">[</span><span class="n">col</span><span class="p">]</span></div></div>
+
+
+<div class="viewcode-block" id="InvalidAliasException"><a class="viewcode-back" href="../code.html#square.InvalidAliasException">[docs]</a><span class="k">class</span> <span class="nc">InvalidAliasException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Exception raised when an invalid alias is used.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">val</span> <span class="o">=</span> <span class="n">val</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;The </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">val</span><span class="si">}</span><span class="s2"> is not a valid alias.&quot;</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022, Nikhil Ravi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
