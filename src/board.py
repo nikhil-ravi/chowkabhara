@@ -404,7 +404,7 @@ class Board:
         fruited_pieces = 0
         for piece in self.squares[ROWS//2][COLS//2].pieces:
             if piece.color == player:
-                fruited_pieces += 1
+                fruited_pieces += 1 if piece.name == "Piece" else 2
         if fruited_pieces == PIECES_PER_PLAYER:
             return True
         return False
