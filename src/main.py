@@ -18,7 +18,7 @@ class Main:
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Chowka Bhara")
-        self.game = Game(number_of_players=2) # Can be between 2 and 4 players.
+        self.game = Game(number_of_players=2)  # Can be between 2 and 4 players.
 
     def mainloop(self):
         """The main loop of the game."""
@@ -60,7 +60,9 @@ class Main:
                             clicked_row = dragger.mouseY // SQSIZE
                             clicked_col = dragger.mouseX // SQSIZE
                             if board.squares[clicked_row][clicked_col].has_pieces():
-                                for piece in board.squares[clicked_row][clicked_col].pieces:
+                                for piece in board.squares[clicked_row][
+                                    clicked_col
+                                ].pieces:
                                     if piece.texture_rect.collidepoint(event.pos):
                                         selected_piece = piece
                                         if selected_piece.color == game.next_player:
@@ -126,9 +128,9 @@ class Main:
                                 if game.is_over():
                                     game.running = False
                                     game.current_stage = "GAME_OVER"
-                                    pygame.display.set_caption(f"Chowka Bhara: Game Over")
-
-                                
+                                    pygame.display.set_caption(
+                                        f"Chowka Bhara: Game Over"
+                                    )
 
                         if len(board.roll) == 0:
                             game.current_stage = "ROLL"

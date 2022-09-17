@@ -82,7 +82,11 @@ class Square:
         """
         if self.has_pieces():
             for other_piece in self.pieces:
-                if other_piece.color == piece.color and other_piece.name == "Piece" and other_piece != piece:
+                if (
+                    other_piece.color == piece.color
+                    and other_piece.name == "Piece"
+                    and other_piece != piece
+                ):
                     return other_piece
         return None
 

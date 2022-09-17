@@ -21,7 +21,9 @@ class Board:
         self._add_pieces()
 
         self.roll = None
-        self.enemy_piece_with_player_tied_piece = {player: [] for player in self.players}
+        self.enemy_piece_with_player_tied_piece = {
+            player: [] for player in self.players
+        }
 
     def _create_squares(self):
         """Generate the 49 squares (7 rows and 7 columns) on the game board.
@@ -100,7 +102,9 @@ class Board:
         for player in self.players:
             for row in range(ROWS):
                 for col in range(COLS):
-                    self.row_col_to_alias[player][(row, col)] = self.grid[player][row, col]
+                    self.row_col_to_alias[player][(row, col)] = self.grid[player][
+                        row, col
+                    ]
 
     def _add_pieces(self):
         """Calls the _add_pieces_for_player method for each player."""
@@ -125,10 +129,12 @@ class Board:
         # Testing
         if testing:
             if color == "Red":
-                self.squares[3][1] = Square(
-                    row=3,
+                self.squares[1][1] = Square(
+                    row=1,
                     col=1,
-                    pieces=[TiedPiece(color, 26, [Piece(color), Piece(color)])],
+                    pieces=[
+                        TiedPiece(color, 28, [Piece(color), Piece(color)]),
+                    ],
                 )  # //TODO
                 self.set_capture_flag(color)
             if color == "Green":
@@ -137,9 +143,11 @@ class Board:
                 #     col=1,
                 #     pieces=[TiedPiece(color, 135, [Piece(color), Piece(color)])],
                 # )  # //TODO
-                self.squares[5][5] = Square(row=5, col=5, pieces=[Piece(color), Piece(color)])  # //TODO
-                self.squares[5][5].pieces[0].position = 128
-                self.squares[5][5].pieces[1].position = 128
+                self.squares[5][1] = Square(
+                    row=5, col=1, pieces=[Piece(color), Piece(color)]
+                )  # //TODO
+                self.squares[5][1].pieces[0].position = 132
+                self.squares[5][1].pieces[1].position = 132
 
                 # self.squares[2][5] = Square(row=2, col=5, pieces=[Piece(color)])  # //TODO
                 # self.squares[2][5].pieces[0].position = 125
@@ -181,16 +189,24 @@ class Board:
                 for enemypiece in self.squares[final.row][final.col].pieces:
                     if enemypiece.name == "TiedPiece":
                         if self.enemy_piece_with_player_tied_piece[enemypiece.color]:
-                            self.enemy_piece_with_player_tied_piece[enemypiece.color].append(piece)
+                            self.enemy_piece_with_player_tied_piece[
+                                enemypiece.color
+                            ].append(piece)
                         else:
-                            self.enemy_piece_with_player_tied_piece[enemypiece.color] = [piece]
-            move_length_to_remove = 2 * move_length if piece.name == "TiedPiece" else move_length
+                            self.enemy_piece_with_player_tied_piece[
+                                enemypiece.color
+                            ] = [piece]
+            move_length_to_remove = (
+                2 * move_length if piece.name == "TiedPiece" else move_length
+            )
             self.roll.remove(move_length_to_remove)
         else:
             # Remove the piece
             self.squares[initial.row][initial.col].remove_piece(piece)
             # Find the other piece to tie with and remove that too
-            other_piece = self.squares[initial.row][initial.col].get_other_single_team_piece(piece)
+            other_piece = self.squares[initial.row][
+                initial.col
+            ].get_other_single_team_piece(piece)
             self.squares[initial.row][initial.col].remove_piece(other_piece)
             self.squares[final.row][final.col].add_piece(
                 TiedPiece(
@@ -202,14 +218,20 @@ class Board:
             self.roll.remove(2)
         # Capture
         if not self.squares[final.row][final.col].is_safe_house:
-            enemy_pieces = self.squares[final.row][final.col].get_enemy_pieces(piece.color)
+            enemy_pieces = self.squares[final.row][final.col].get_enemy_pieces(
+                piece.color
+            )
             for enemy_piece in enemy_pieces:
                 if not (enemy_piece.name == "TiedPiece" and piece.name == "Piece"):
-                    home_row, home_col = self.get_alias_to_row_col(enemy_piece.home_position)
+                    home_row, home_col = self.get_alias_to_row_col(
+                        enemy_piece.home_position
+                    )
                     self.squares[final.row][final.col].remove_piece(enemy_piece)
                     if enemy_piece.name == "TiedPiece":
                         for enemy_piece_component_piece in enemy_piece.pieces:
-                            self.squares[home_row][home_col].add_piece(enemy_piece_component_piece)
+                            self.squares[home_row][home_col].add_piece(
+                                enemy_piece_component_piece
+                            )
                     else:
                         self.squares[home_row][home_col].add_piece(enemy_piece)
                     self.player_captured_flags[piece.color] = True
@@ -218,10 +240,16 @@ class Board:
                     self.kawade()
         # If a Single Piece is on a square with an enemy TiedPiece, then it can
         # be captured when the TiedPiece moves.
-        if piece.name == "TiedPiece" and (not self.squares[initial.row][initial.col].is_safe_house):
-            enemy_pieces = self.squares[initial.row][initial.col].get_enemy_pieces(piece.color)
+        if piece.name == "TiedPiece" and (
+            not self.squares[initial.row][initial.col].is_safe_house
+        ):
+            enemy_pieces = self.squares[initial.row][initial.col].get_enemy_pieces(
+                piece.color
+            )
             for enemy_piece in enemy_pieces:
-                home_row, home_col = self.get_alias_to_row_col(enemy_piece.home_position)
+                home_row, home_col = self.get_alias_to_row_col(
+                    enemy_piece.home_position
+                )
                 self.squares[initial.row][initial.col].remove_piece(enemy_piece)
                 self.squares[home_row][home_col].add_piece(enemy_piece)
                 self.player_captured_flags[piece.color] = True
@@ -230,7 +258,6 @@ class Board:
 
         piece.moved = True
         piece.clear_moves()
-        
 
     def valid_move(self, piece: Piece | TiedPiece, move: Move) -> bool:
         """Checks whether a move is valid.
@@ -272,8 +299,7 @@ class Board:
 
     def can_move(self, player) -> bool:
         return True
-        
-        
+
     def calc_moves(self, piece: Piece):
         """Calculate which of moves from the roll the given Piece at row and col
         can undertake. It first clears the piece's moves vector and then populates
@@ -295,17 +321,27 @@ class Board:
                 and not self.squares[row][col].is_safe_house
                 else False
             )
-            can_go_till = piece.fruit_position if self.player_captured_flags[color] else piece.final_outer_position
+            can_go_till = (
+                piece.fruit_position
+                if self.player_captured_flags[color]
+                else piece.final_outer_position
+            )
             for places in sorted(self.roll):
-                if self.intermediate_squares_have_enemy_tied_pieces(piece, places) == False:
+                if (
+                    self.intermediate_squares_have_enemy_tied_pieces(piece, places)
+                    == False
+                ):
                     pos = piece.position + places
                     if pos <= can_go_till:
                         final_row, final_col = self.get_alias_to_row_col(pos)
                         if (
-                            (pos % GRID_OFFSET) <= PLACES_BEFORE_INNER  # if still in the outer loop
+                            (pos % GRID_OFFSET)
+                            <= PLACES_BEFORE_INNER  # if still in the outer loop
                             and (  # The final position
                                 # Either needs be empty or contain an enemy piece
-                                self.squares[final_row][final_col].isempty_or_enemy(piece.color)
+                                self.squares[final_row][final_col].isempty_or_enemy(
+                                    piece.color
+                                )
                                 # Or should be a safe house
                                 or self.squares[final_row][final_col].is_safe_house
                             )
@@ -315,8 +351,14 @@ class Board:
                                 Square(row=final_row, col=final_col),
                             )
                             piece.add_move(move_to_add)
-                    if places == 2 and can_tie and (piece.position % GRID_OFFSET > PLACES_BEFORE_INNER):
-                        final_row, final_col = self.get_alias_to_row_col(piece.position + 1)
+                    if (
+                        places == 2
+                        and can_tie
+                        and (piece.position % GRID_OFFSET > PLACES_BEFORE_INNER)
+                    ):
+                        final_row, final_col = self.get_alias_to_row_col(
+                            piece.position + 1
+                        )
                         final_Square = Square(row=final_row, col=final_col)
                         if not final_Square.is_safe_house:
                             move_to_add = Move(
@@ -340,7 +382,9 @@ class Board:
                         )
                         piece.add_move(move_to_add)
 
-    def intermediate_squares_have_enemy_tied_pieces(self, piece: Piece, places: int) -> bool:
+    def intermediate_squares_have_enemy_tied_pieces(
+        self, piece: Piece, places: int
+    ) -> bool:
         """Checks whether there are any enemy TiedPieces between the piece's location
         and its intended final location.
 
@@ -353,11 +397,25 @@ class Board:
             and its position advanced by places.
         """
         for intermediate_place in range(1, places):
-            intermediate_row, intermediate_col = self.get_alias_to_row_col(intermediate_place + piece.position)
-            if self.squares[intermediate_row][intermediate_col].has_enemy_tied_piece(piece.color) and not self.squares[
+            intermediate_row, intermediate_col = self.get_alias_to_row_col(
+                intermediate_place + piece.position
+            )
+            if (intermediate_row, intermediate_col) not in SAFE_HOUSES and self.squares[
                 intermediate_row
-            ][intermediate_col].has_team_piece(piece.color):
-                return True
+            ][intermediate_col].has_enemy_tied_piece(piece.color):
+                print("Here")
+                intermediate_Tied_Piece = [
+                    Tied_Piece
+                    for Tied_Piece in self.squares[intermediate_row][
+                        intermediate_col
+                    ].pieces
+                    if Tied_Piece.color != piece.color
+                ][0]
+                if not self.squares[intermediate_row][
+                    intermediate_col
+                ].has_single_team_piece(intermediate_Tied_Piece.color):
+                    print("3Here")
+                    return True
         return False
 
     def kawade(self, testing: bool = False):
@@ -399,13 +457,20 @@ class Board:
             for piece in self.enemy_piece_with_player_tied_piece[color]:
                 piece.clear_with_enemy_tied_piece()
             self.enemy_piece_with_player_tied_piece[color] = None
-    
-    def has_player_finished(self, player: PieceColor):
+
+    def has_player_finished(self, player: PieceColor) -> bool:
+        """Checks whether all of the given player's pieces are in the finish square.
+
+        Args:
+            player (PieceColor): The player's color.
+
+        Returns:
+            bool: Whether all of the player's pieces are in the finish square.
+        """
         fruited_pieces = 0
-        for piece in self.squares[ROWS//2][COLS//2].pieces:
+        for piece in self.squares[ROWS // 2][COLS // 2].pieces:
             if piece.color == player:
                 fruited_pieces += 1 if piece.name == "Piece" else 2
         if fruited_pieces == PIECES_PER_PLAYER:
             return True
         return False
-                

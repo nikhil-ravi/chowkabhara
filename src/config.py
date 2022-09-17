@@ -6,6 +6,7 @@ from sound import Sound
 
 class Config:
     """The rendering configuration for the game. Handles the theme, font, and sounds."""
+
     def __init__(self):
         self.themes = list(Theme.__members__.keys())
         self.idx = 0

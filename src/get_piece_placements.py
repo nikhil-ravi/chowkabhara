@@ -38,11 +38,11 @@ def run(path, side_length, diameters):
                     col[i][1].append(data)
         Dict = {title: column for (title, column) in col}
         df = (
-            pd.DataFrame(Dict).drop(
-                columns=["# circle"]
-            ).apply(
-                pd.to_numeric
-                ).to_numpy() + SQSIZE // 2
+            pd.DataFrame(Dict)
+            .drop(columns=["# circle"])
+            .apply(pd.to_numeric)
+            .to_numpy()
+            + SQSIZE // 2
         ).tolist()
         results[len(df)] = df
         return results
@@ -58,8 +58,8 @@ def main():
     results = run(path, final_diameter_list)
     return results
 
+
 if __name__ == "__main__":
     results = main()
     with open("piece_placements.json", "w") as f:
         json.dump(results)
-    

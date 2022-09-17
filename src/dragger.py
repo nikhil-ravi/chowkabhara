@@ -6,6 +6,7 @@ from move import Move
 from piece import Piece
 from square import Square
 
+
 class Dragger:
     """The Dragger class to handle the dragging of pieces."""
 
@@ -21,7 +22,7 @@ class Dragger:
 
     def update_blit(self, surface: pygame.Surface):
         """Updates the surface to reflect the dragging of pieces.
-        
+
         Args:
             surface (pygame.Surface): The pygame surface to draw on.
         """
@@ -44,7 +45,7 @@ class Dragger:
         Args:
             pos (Tuple[int, int]): The row, col pair of the new mouse position.
         """
-        self.mouseX, self.mouseY = pos # (xcor, ycor)
+        self.mouseX, self.mouseY = pos  # (xcor, ycor)
 
     def save_initial(self, pos: Tuple[int, int]):
         """Save the initial piece position to bring it back in case it was dragged
@@ -69,17 +70,18 @@ class Dragger:
         """Resets the dragger."""
         self.piece = None
         self.dragging = False
-    
-    
-    def get_move_from_initial_final(self, initial: Square, final: Square) -> Move | None:
+
+    def get_move_from_initial_final(
+        self, initial: Square, final: Square
+    ) -> Move | None:
         """Given an initial square and a final square, check in the piece's moves list
         for a move with the given initial and final squares and return it if present,
         else return None.
-        
+
         Args:
             initial (Square): The initial square.
             final (Square): The final square.
-        
+
         Returns:
             Move | None:
              - Move: If a move with the initial and final squares is present, return it.
